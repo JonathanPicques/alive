@@ -26,8 +26,8 @@
 
 #ifdef _WIN32 
 
-#  ifndef __GNUC__
-   /* MSVC/Borland */
+#  if defined(__MINGW32__) || !defined(__GNUC__)
+   /* MSVC/Borland/MinGW */
    typedef __int64 ogg_int64_t;
    typedef __int32 ogg_int32_t;
    typedef unsigned __int32 ogg_uint32_t;
@@ -35,7 +35,7 @@
    typedef unsigned __int16 ogg_uint16_t;
 #  else
    /* Cygwin */
-   #include <_G_config.h>
+#  include <_G_config.h>
    typedef _G_int64_t ogg_int64_t;
    typedef _G_int32_t ogg_int32_t;
    typedef _G_uint32_t ogg_uint32_t;
