@@ -4,10 +4,14 @@
 #include "SDL.h"
 #include <d3d9.h>
 
+#ifndef __MINGW32__
 #pragma warning(push)
 #pragma warning(disable:4265)
+#endif
 #include <wrl/client.h>
+#ifndef __MINGW32__
 #pragma warning(pop)
+#endif
 #include "imgui/imgui.h"
 
 class DirectX9Renderer : public AbstractRenderer

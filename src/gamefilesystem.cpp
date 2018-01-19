@@ -4,11 +4,15 @@
 
 #undef DeleteFile
 
-#pragma warning(push)
-#pragma warning(disable:4917)
-#pragma warning(disable:4091) //  'typedef ': ignored on left of 'tagGPFIDL_FLAGS' when no variable is declared 
+#ifndef __MINGW32__
+#   pragma warning(push)
+#   pragma warning(disable:4917)
+#   pragma warning(disable:4091) //  'typedef ': ignored on left of 'tagGPFIDL_FLAGS' when no variable is declared
+#endif
 #include <shlobj.h>
-#pragma warning(pop)
+#ifndef __MINGW32__
+#   pragma warning(pop)
+#endif
 #else
 #include <dirent.h>
 #include <unistd.h>

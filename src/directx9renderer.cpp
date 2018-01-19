@@ -6,7 +6,9 @@
 #include <algorithm>
 #include "logger.hpp"
 
-#pragma comment(lib, "d3d9.lib")
+#ifndef __MINGW32__
+#   pragma comment(lib, "d3d9.lib")
+#endif
 
 void DirectX9Renderer::PopulatePresentParams(bool vSync)
 {
