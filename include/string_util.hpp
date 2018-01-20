@@ -162,11 +162,15 @@ namespace string_util
         return (haystack.find(needle) != boost::string_view::npos);
     }
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_WIN32)
     inline std::string wstring_to_utf8(const std::wstring& str)
     {
+#if !defined(__MINGW32__)
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         return conv.to_bytes(str);
+#else
+            return std::string(str.begin(), str.end());
+#endif
     }
 #endif
 }

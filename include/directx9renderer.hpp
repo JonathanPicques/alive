@@ -52,8 +52,8 @@ private:
     Microsoft::WRL::ComPtr<IDirect3DIndexBuffer9> mRendererIBO;
 
     D3DPRESENT_PARAMETERS mPresentParameters; // stores the important attributes and 
-    D3DMATRIX mProjectionMatrix;              // properties your Direct3D_device will have
-    VOID* mData;                              // pointer to beginning of vertex buffer
+    // D3DMATRIX mProjectionMatrix;              // properties your Direct3D_device will have
+    // VOID* mData;                              // pointer to beginning of vertex buffer
                                               // actual data to be fed to the vertex buffer
     struct D3DVERTEX
     {

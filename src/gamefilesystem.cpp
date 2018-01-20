@@ -144,7 +144,7 @@ std::string GameFileSystem::InitBasePath()
         const bool bIsDebugPath = string_util::contains(basePath, "/alive/bin/") || string_util::contains(basePath, "\\alive\\bin\\");
         if (bIsDebugPath)
         {
-            if (string_util::contains(basePath, "/alive/bin/"))
+            if (string_util::contains(basePath, "alive/bin"))
             {
                 LOG_WARNING("We appear to be running from the IDE (Linux) - fixing up basePath to be ../");
                 basePath += "../";
@@ -152,7 +152,11 @@ std::string GameFileSystem::InitBasePath()
             else
             {
                 LOG_WARNING("We appear to be running from the IDE (Win32) - fixing up basePath to be ../");
+#if !defined(__MINGW32__)
                 basePath += "..\\..\\";
+#else
+                basePath += "..\\";
+#endif
             }
         }
     }

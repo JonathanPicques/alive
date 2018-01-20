@@ -1,17 +1,18 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-typedef unsigned char u8;
-typedef signed char s8;
+using u8 = std::uint8_t;
+using s8 = std::int8_t;
 
-typedef unsigned short int u16;
-typedef signed short int s16;
+using u16 = std::uint16_t;
+using s16 = std::int16_t;
 
-typedef unsigned int u32;
-typedef signed int s32;
+using u32 = std::uint32_t;
+using s32 = std::int32_t;
 
-typedef float f32;
-typedef double f64;
+using u64 = std::uint64_t;
+using s64 = std::int64_t;
 
-typedef uint64_t u64;
+using f32 = float;
+using f64 = double;
