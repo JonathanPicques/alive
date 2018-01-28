@@ -174,6 +174,12 @@ void Animation::SetFrame(u32 frame)
     mFrameDelay = mAnim.Animation().Fps();
 }
 
+void Animation::SetCounter(u32 counter)
+{
+    mCounter = counter;
+    // TODO: not correctly set I suppose
+}
+
 void Animation::Restart()
 {
     mCounter = 0;

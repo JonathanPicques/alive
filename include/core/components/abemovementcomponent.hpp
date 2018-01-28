@@ -3,6 +3,8 @@
 #include <map>
 #include <functional>
 
+#include "types.hpp"
+#include "input.hpp"
 #include "core/component.hpp"
 
 class PhysicsComponent;
@@ -142,7 +144,7 @@ private:
     bool DirectionChanged() const;
     bool TryMoveLeftOrRight() const;
 
-    void SetAnimation(const std::string& anim);
+    void SetAnimation(AbeAnimation anim);
     void SetState(States state);
     void SetCurrentAndNextState(States current, States next);
 
@@ -158,12 +160,24 @@ private:
         Goal mGoal;
         States mState;
         States mNextState;
-    }
-    mData =
+        struct
+        {
+            AbeAnimation mAnimation; // u16
+            s32 mCounter;
+            s32 mFrameNum;
+            bool mFlipX;
+        } mAnimationData;
+    } mData =
     {
         Goal::eStand,
         States::eStanding,
-        States::eStanding
+        States::eStanding,
+        {
+            AbeAnimation::eAbeStandIdle,
+            0,
+            -1,
+            false
+        }
     };
 };
 

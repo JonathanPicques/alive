@@ -92,17 +92,26 @@ void AbeMovementComponent::OnResolveDependencies()
     mPhysicsComponent = mEntity->GetComponent<PhysicsComponent>();
     mAnimationComponent = mEntity->GetComponent<AnimationComponent>();
     mTransformComponent = mEntity->GetComponent<TransformComponent>();
+
+    SetAnimation(mData.mAnimationData.mAnimation);
+    mAnimationComponent->mAnimation->SetFrame(static_cast<u32>(mData.mAnimationData.mFrameNum));
+    mAnimationComponent->mAnimation->SetCounter(static_cast<u32>(mData.mAnimationData.mCounter));
+    mAnimationComponent->mFlipX = mData.mAnimationData.mFlipX;
 }
 
 void AbeMovementComponent::Serialize(std::ostream& os) const
 {
-    // static_assert(std::is_pod<decltype(mData)>::value);
-    os.write(static_cast<const char*>(static_cast<const void*>(&mData)), sizeof(decltype(mData)));
+    static_assert(std::is_pod<decltype(mData)>::value, "AbeMovementComponent::mData is not POD");
+    decltype(mData) data = mData;
+    data.mAnimationData.mCounter =  mAnimationComponent->mAnimation->FrameCounter();
+    data.mAnimationData.mFrameNum = mAnimationComponent->mAnimation->FrameNumber();
+    data.mAnimationData.mFlipX = mAnimationComponent->mFlipX;
+    os.write(static_cast<const char*>(static_cast<const void*>(&data)), sizeof(decltype(data)));
 }
 
 void AbeMovementComponent::Deserialize(std::istream& is)
 {
-    // static_assert(std::is_pod<decltype(mData)>::value);
+    static_assert(std::is_pod<decltype(mData)>::value, "AbeMovementComponent::mData is not POD");
     is.read(static_cast<char*>(static_cast<void*>(&mData)), sizeof(decltype(mData)));
 }
 
@@ -150,9 +159,10 @@ bool AbeMovementComponent::TryMoveLeftOrRight() const
     return mData.mGoal == Goal::eGoLeft || mData.mGoal == Goal::eGoRight;
 }
 
-void AbeMovementComponent::SetAnimation(const std::string& anim)
+void AbeMovementComponent::SetAnimation(AbeAnimation anim)
 {
-    mAnimationComponent->Change(anim.c_str());
+    mAnimationComponent->Change(kAbeAnimations.at(anim).c_str());
+    mData.mAnimationData.mAnimation = anim;
 }
 
 void AbeMovementComponent::SetState(AbeMovementComponent::States state)
@@ -177,7 +187,7 @@ void AbeMovementComponent::SetCurrentAndNextState(AbeMovementComponent::States c
 
 void AbeMovementComponent::PreStanding(AbeMovementComponent::States /*previous*/)
 {
-    SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeStandIdle));
+    SetAnimation(AbeAnimation::eAbeStandIdle);
     mPhysicsComponent->xSpeed = 0.0f;
     mPhysicsComponent->ySpeed = 0.0f;
 }
@@ -188,12 +198,12 @@ void AbeMovementComponent::Standing()
     {
         if (DirectionChanged())
         {
-            SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeStandTurnAround));
+            SetAnimation(AbeAnimation::eAbeStandTurnAround);
             SetCurrentAndNextState(States::eStandTurningAround, States::eStanding);
         }
         else
         {
-            SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeStandToWalk));
+            SetAnimation(AbeAnimation::eAbeStandToWalk);
             SetXSpeed(kAbeWalkSpeed);
             SetCurrentAndNextState(States::eWalking, States::eStandToWalking);
         }
@@ -206,14 +216,14 @@ void AbeMovementComponent::Standing()
 
 void AbeMovementComponent::PreChanting(AbeMovementComponent::States /*previous*/)
 {
-    SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeStandToChant));
+    SetAnimation(AbeAnimation::eAbeStandToChant);
 }
 
 void AbeMovementComponent::Chanting()
 {
     if (mData.mGoal == Goal::eStand)
     {
-        SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeChantToStand));
+        SetAnimation(AbeAnimation::eAbeChantToStand);
         SetCurrentAndNextState(States::eChantToStand, States::eStanding);
     }
     // Still chanting?
@@ -233,7 +243,7 @@ void AbeMovementComponent::Chanting()
 
 void AbeMovementComponent::PreWalking(AbeMovementComponent::States /*previous*/)
 {
-    SetAnimation(kAbeAnimations.at(AbeAnimation::eAbeWalking));
+    SetAnimation(AbeAnimation::eAbeWalking);
     SetXSpeed(kAbeWalkSpeed);
 }
 
@@ -249,7 +259,7 @@ void AbeMovementComponent::Walking()
         if (FrameIs(2 + 1) || FrameIs(11 + 1))
         {
             SetCurrentAndNextState(States::eWalkingToStanding, States::eStanding);
-            SetAnimation(FrameIs(2 + 1) ? kAbeAnimations.at(AbeAnimation::eAbeWalkToStand) : kAbeAnimations.at(AbeAnimation::eAbeWalkToStandMidGrid));
+            SetAnimation(FrameIs(2 + 1) ? AbeAnimation::eAbeWalkToStand : AbeAnimation::eAbeWalkToStandMidGrid);
         }
     }
 }

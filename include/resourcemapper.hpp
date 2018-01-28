@@ -529,6 +529,7 @@ public:
     void Render(AbstractRenderer& rend, bool flipX, int layer, s32 xpos, s32 ypos, AbstractRenderer::eCoordinateSystem coordinateSystem = AbstractRenderer::eWorld) const;
     void Render(AbstractRenderer& rend, bool flipX, int layer, AbstractRenderer::eCoordinateSystem coordinateSystem = AbstractRenderer::eWorld) const;
     void SetFrame(u32 frame);
+	void SetCounter(u32 counter);
     void Restart();
     bool Collision(s32 x, s32 y) const;
     void SetXPos(s32 xpos);
