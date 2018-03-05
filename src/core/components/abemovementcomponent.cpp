@@ -81,6 +81,7 @@ static const std::map<AbeMovementComponent::AbeAnimation, std::string> kAbeAnima
 
 void AbeMovementComponent::OnLoad()
 {
+    mStateFnMap[States::eGroundingToStanding] = { &AbeMovementComponent::PreGroundingToStanding, &AbeMovementComponent::GroundingToStanding };
 
     mStateFnMap[States::eStanding] = { &AbeMovementComponent::PreStanding, &AbeMovementComponent::Standing };
     mStateFnMap[States::eStandingToWalking] = { &AbeMovementComponent::PreStandingToWalking, &AbeMovementComponent::StandingToWalking };
@@ -179,6 +180,19 @@ void AbeMovementComponent::Update()
  * Abe Movement Finite State Machine
  */
 
+void AbeMovementComponent::PreGroundingToStanding(AbeMovementComponent::States)
+{
+    SetAnimation(AbeAnimation::eAbeHitGroundToStand);
+}
+
+void AbeMovementComponent::GroundingToStanding()
+{
+    if (mAnimationComponent->Complete())
+    {
+        SetState(States::eStanding);
+    }
+}
+
 void AbeMovementComponent::PreStanding(AbeMovementComponent::States)
 {
     SetAnimation(AbeAnimation::eAbeStandIdle);
@@ -215,6 +229,7 @@ void AbeMovementComponent::Standing()
     }
     else if (mData.mGoal == Goal::eGoDown)
     {
+        // TODO: Hoist down else crouch.
         SetState(States::eStandingToCrouching);
     }
     else if (mData.mGoal == Goal::eChant)

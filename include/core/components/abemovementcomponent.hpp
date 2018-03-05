@@ -47,6 +47,8 @@ public:
     };
     enum class States
     {
+        eGroundingToStanding,
+
         eStanding,
         eStandingToWalking,
         eStandingToRunning,
@@ -155,6 +157,9 @@ public:
     void ToggleCheatMode();
 
 private:
+    void PreGroundingToStanding(States previous);
+    void GroundingToStanding();
+
     void PreStanding(States previous);
     void Standing();
     void PreStandingToWalking(States previous);
@@ -261,8 +266,8 @@ private:
             false,
             false,
             Goal::eStand,
-            States::eStanding,
-            AbeAnimation::eAbeStandIdle,
+            States::eGroundingToStanding,
+            AbeAnimation::eAbeHitGroundToStand,
             0,
             false
         };
