@@ -52,10 +52,12 @@ public:
         eStanding,
         eStandingToWalking,
         eStandingToRunning,
-        eStandingToJumping,
+        eStandingToJumpingUp,
         eStandingToCrouching,
         eStandingPushingWall,
         eStandingTurningAround,
+
+        eJumpingUpToFallingDown,
 
         eWalking,
         eWalkingToRunning,
@@ -81,7 +83,7 @@ public:
         eFallingBackToStandingAngry,
 
         eChanting,
-        eChantingToStanding,
+        eChantingToStanding
     };
     enum class AbeAnimation : u16
     {
@@ -176,6 +178,9 @@ private:
     void PreStandingTurningAround(States previous);
     void StandingTurningAround();
 
+    void PreJumpingUpToFallingDown(States previous);
+    void JumpingUpToFallingDown();
+
     void PreWalking(States previous);
     void Walking();
     void PreWalkingToRunning(States previous);
@@ -235,6 +240,7 @@ private:
     bool FrameIs(u32 frame) const;
     void SetFrame(u32 frame);
     void SetXSpeed(f32 speed);
+    void SetYSpeed(f32 speed);
     void SnapXToGrid();
     void FlipDirection();
 

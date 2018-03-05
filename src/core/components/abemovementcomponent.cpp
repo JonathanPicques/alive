@@ -14,8 +14,9 @@
 
 DEFINE_COMPONENT(AbeMovementComponent);
 
-static const f32 kAbeRunSpeed = 6.25;
+static const f32 kAbeRunSpeed = 6.25f;
 static const f32 kAbeWalkSpeed = 2.777771f;
+static const f32 kAbeJumpSpeed = 0.0f;
 static const std::map<AbeMovementComponent::AbeAnimation, std::string> kAbeAnimations = { // NOLINT
     { AbeMovementComponent::AbeAnimation::eAbeWalkToStand, std::string{ "AbeWalkToStand" }},
     { AbeMovementComponent::AbeAnimation::eAbeWalkToStandMidGrid, std::string{ "AbeWalkToStandMidGrid" }},
@@ -86,10 +87,12 @@ void AbeMovementComponent::OnLoad()
     mStateFnMap[States::eStanding] = { &AbeMovementComponent::PreStanding, &AbeMovementComponent::Standing };
     mStateFnMap[States::eStandingToWalking] = { &AbeMovementComponent::PreStandingToWalking, &AbeMovementComponent::StandingToWalking };
     mStateFnMap[States::eStandingToRunning] = { &AbeMovementComponent::PreStandingToRunning, &AbeMovementComponent::StandingToRunning };
-    mStateFnMap[States::eStandingToJumping] = { &AbeMovementComponent::PreStandingToJumpingUp, &AbeMovementComponent::StandingToJumpingUp };
+    mStateFnMap[States::eStandingToJumpingUp] = { &AbeMovementComponent::PreStandingToJumpingUp, &AbeMovementComponent::StandingToJumpingUp };
     mStateFnMap[States::eStandingToCrouching] = { &AbeMovementComponent::PreStandingToCrouching, &AbeMovementComponent::StandingToCrouching };
     mStateFnMap[States::eStandingPushingWall] = { &AbeMovementComponent::PreStandingPushingWall, &AbeMovementComponent::StandingPushingWall };
     mStateFnMap[States::eStandingTurningAround] = { &AbeMovementComponent::PreStandingTurningAround, &AbeMovementComponent::StandingTurningAround };
+
+    mStateFnMap[States::eJumpingUpToFallingDown] = { &AbeMovementComponent::PreJumpingUpToFallingDown, &AbeMovementComponent::JumpingUpToFallingDown };
 
     mStateFnMap[States::eRunning] = { &AbeMovementComponent::PreRunning, &AbeMovementComponent::Running };
     mStateFnMap[States::eRunningToWalking] = { &AbeMovementComponent::PreRunningToWalking, &AbeMovementComponent::RunningToWalking };
@@ -230,7 +233,7 @@ void AbeMovementComponent::Standing()
     }
     else if (mData.mGoal == Goal::eGoUp)
     {
-        SetState(States::eStandingToJumping);
+        SetState(States::eStandingToJumpingUp);
     }
     else if (mData.mGoal == Goal::eGoDown)
     {
@@ -273,6 +276,7 @@ void AbeMovementComponent::StandingToRunning()
 
 void AbeMovementComponent::PreStandingToJumpingUp(AbeMovementComponent::States)
 {
+    SetYSpeed(-kAbeJumpSpeed);
     SetAnimation(AbeAnimation::eAbeStandToJumpUp);
 }
 
@@ -281,8 +285,7 @@ void AbeMovementComponent::StandingToJumpingUp()
     // TODO: Hoist?
     if (mAnimationComponent->Complete())
     {
-        // TODO: FallingDown state.
-        SetState(States::eGroundingToStanding);
+        SetState(States::eJumpingUpToFallingDown);
     }
 }
 
@@ -323,6 +326,20 @@ void AbeMovementComponent::StandingTurningAround()
     {
         FlipDirection();
         SetState(States::eStanding);
+    }
+}
+
+void AbeMovementComponent::PreJumpingUpToFallingDown(AbeMovementComponent::States)
+{
+    SetYSpeed(kAbeJumpSpeed);
+    SetAnimation(AbeAnimation::eAbeJumpUpFalling);
+}
+
+void AbeMovementComponent::JumpingUpToFallingDown()
+{
+    if (mAnimationComponent->Complete())
+    {
+        SetState(States::eGroundingToStanding);
     }
 }
 
@@ -754,6 +771,11 @@ void AbeMovementComponent::SetFrame(u32 frame)
 void AbeMovementComponent::SetXSpeed(f32 speed)
 {
     mPhysicsComponent->SetXSpeed(mData.mDirection * speed);
+}
+
+void AbeMovementComponent::SetYSpeed(f32 speed)
+{
+    mPhysicsComponent->SetYSpeed(speed);
 }
 
 void AbeMovementComponent::SnapXToGrid()
