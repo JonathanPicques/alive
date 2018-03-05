@@ -52,6 +52,7 @@ public:
         eStanding,
         eStandingToWalking,
         eStandingToRunning,
+        eStandingToJumping,
         eStandingToCrouching,
         eStandingPushingWall,
         eStandingTurningAround,
@@ -131,7 +132,7 @@ public:
         eAbeHoppingToStand,
         eAbeHoistDangling,
         eAbeHoistPullSelfUp,
-        eAbeStandToJump,
+        eAbeStandToJumpUp,
         eAbeJumpUpFalling,
         eAbeWalking,
         eAbeRunning,
@@ -166,6 +167,8 @@ private:
     void StandingToWalking();
     void PreStandingToRunning(States previous);
     void StandingToRunning();
+    void PreStandingToJumpingUp(States previous);
+    void StandingToJumpingUp();
     void PreStandingToCrouching(States previous);
     void StandingToCrouching();
     void PreStandingPushingWall(States previous);
@@ -285,6 +288,6 @@ public:
     void Update();
 
 private:
-    const  InputMapping* mGameCommands = nullptr;
+    const InputMapping* mGameCommands = nullptr;
     AbeMovementComponent* mAbeMovement = nullptr;
 };

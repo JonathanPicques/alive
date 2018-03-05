@@ -64,7 +64,7 @@ static const std::map<AbeMovementComponent::AbeAnimation, std::string> kAbeAnima
     { AbeMovementComponent::AbeAnimation::eAbeHoppingToStand, std::string{ "AbeHoppingToStand" }},
     { AbeMovementComponent::AbeAnimation::eAbeHoistDangling, std::string{ "AbeHoistDangling" }},
     { AbeMovementComponent::AbeAnimation::eAbeHoistPullSelfUp, std::string{ "AbeHoistPullSelfUp" }},
-    { AbeMovementComponent::AbeAnimation::eAbeStandToJump, std::string{ "AbeStandToJump" }},
+    { AbeMovementComponent::AbeAnimation::eAbeStandToJumpUp, std::string{ "AbeStandToJumpUp" }},
     { AbeMovementComponent::AbeAnimation::eAbeJumpUpFalling, std::string{ "AbeJumpUpFalling" }},
     { AbeMovementComponent::AbeAnimation::eAbeWalking, std::string{ "AbeWalking" }},
     { AbeMovementComponent::AbeAnimation::eAbeRunning, std::string{ "AbeRunning" }},
@@ -86,6 +86,7 @@ void AbeMovementComponent::OnLoad()
     mStateFnMap[States::eStanding] = { &AbeMovementComponent::PreStanding, &AbeMovementComponent::Standing };
     mStateFnMap[States::eStandingToWalking] = { &AbeMovementComponent::PreStandingToWalking, &AbeMovementComponent::StandingToWalking };
     mStateFnMap[States::eStandingToRunning] = { &AbeMovementComponent::PreStandingToRunning, &AbeMovementComponent::StandingToRunning };
+    mStateFnMap[States::eStandingToJumping] = { &AbeMovementComponent::PreStandingToJumpingUp, &AbeMovementComponent::StandingToJumpingUp };
     mStateFnMap[States::eStandingToCrouching] = { &AbeMovementComponent::PreStandingToCrouching, &AbeMovementComponent::StandingToCrouching };
     mStateFnMap[States::eStandingPushingWall] = { &AbeMovementComponent::PreStandingPushingWall, &AbeMovementComponent::StandingPushingWall };
     mStateFnMap[States::eStandingTurningAround] = { &AbeMovementComponent::PreStandingTurningAround, &AbeMovementComponent::StandingTurningAround };
@@ -227,6 +228,10 @@ void AbeMovementComponent::Standing()
             }
         }
     }
+    else if (mData.mGoal == Goal::eGoUp)
+    {
+        SetState(States::eStandingToJumping);
+    }
     else if (mData.mGoal == Goal::eGoDown)
     {
         // TODO: Hoist down else crouch.
@@ -263,6 +268,21 @@ void AbeMovementComponent::StandingToRunning()
     if (mAnimationComponent->Complete())
     {
         SetState(States::eRunning);
+    }
+}
+
+void AbeMovementComponent::PreStandingToJumpingUp(AbeMovementComponent::States)
+{
+    SetAnimation(AbeAnimation::eAbeStandToJumpUp);
+}
+
+void AbeMovementComponent::StandingToJumpingUp()
+{
+    // TODO: Hoist?
+    if (mAnimationComponent->Complete())
+    {
+        // TODO: FallingDown state.
+        SetState(States::eGroundingToStanding);
     }
 }
 
