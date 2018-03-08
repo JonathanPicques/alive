@@ -538,7 +538,11 @@ void AbeMovementComponent::Crouching()
 {
     if (IsMovingLeftOrRight())
     {
-        if (DirectionChanged())
+        if (IsMovingTowardsWall(true))
+        {
+            SetState(States::eFallingBack);
+        }
+        else if (DirectionChanged())
         {
             SetState(States::eCrouchingTurningAround);
         }
@@ -604,7 +608,11 @@ void AbeMovementComponent::Rolling()
     if (FrameIs(0 + 1) || FrameIs(4 + 1) || FrameIs(8 + 1))
     {
         SnapXToGrid();
-        if (!IsMovingLeftOrRight() || DirectionChanged())
+        if (IsMovingTowardsWall(true))
+        {
+            SetState(States::eFallingBack);
+        }
+        else if (!IsMovingLeftOrRight() || DirectionChanged())
         {
             SetState(States::eCrouching); // TODO: rolling to crouching
         }
@@ -753,9 +761,13 @@ bool AbeMovementComponent::IsMovingLeftOrRight() const
     return mData.mGoal == Goal::eGoLeft || mData.mGoal == Goal::eGoRight;
 }
 
-bool AbeMovementComponent::IsMovingTowardsWall() const
+bool AbeMovementComponent::IsMovingTowardsWall(bool ignoreHead) const
 {
-    return static_cast<bool>(mCollisionSystem->WallCollision(mData.mDirection == Direction::eLeft, mTransformComponent->GetX(), mTransformComponent->GetY(), 25.0f, -50.0f));
+    if (mData.mGoal == Goal::eGoLeft || mData.mGoal == Goal::eGoRight)
+    {
+        return static_cast<bool>(mCollisionSystem->WallCollision(mData.mGoal == Goal::eGoLeft, mTransformComponent->GetX(), mTransformComponent->GetY(), 25.0f, ignoreHead ? -20.0f : -50.0f));
+    }
+    return false;
 }
 
 bool AbeMovementComponent::FrameIs(u32 frame) const

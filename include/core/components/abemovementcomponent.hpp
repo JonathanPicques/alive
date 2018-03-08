@@ -234,7 +234,7 @@ private:
     bool IsBelowCeiling() const;
     bool DirectionChanged() const;
     bool IsMovingLeftOrRight() const;
-    bool IsMovingTowardsWall() const;
+    bool IsMovingTowardsWall(bool ignoreHead = false) const;
 
 private:
     bool FrameIs(u32 frame) const;
