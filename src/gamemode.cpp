@@ -84,6 +84,8 @@ void GameMode::Update(const InputReader& input, CoordinateSpace& coords)
         // Physics System
         mWorld.mEntityManager.With<PhysicsComponent, TransformComponent>([](auto, auto physics, auto transform)
         {
+            physics->SetXSpeed(physics->GetXSpeed() + physics->GetXVelocity());
+            physics->SetYSpeed(physics->GetYSpeed() + physics->GetYVelocity());
             transform->Add(physics->GetXSpeed(), physics->GetYSpeed());
         });
         // Animation System

@@ -239,8 +239,10 @@ private:
 private:
     bool FrameIs(u32 frame) const;
     void SetFrame(u32 frame);
-    void SetXSpeed(f32 speed);
-    void SetYSpeed(f32 speed);
+    void SetXSpeed(f32 speedX);
+    void SetYSpeed(f32 speedY);
+    void SetXVelocity(f32 velocityX);
+    void SetYVelocity(f32 velocityY);
     void SnapXToGrid();
     void FlipDirection();
 

@@ -16,16 +16,25 @@ public:
 public:
     float GetXSpeed() const;
     float GetYSpeed() const;
+    float GetXVelocity() const;
+    float GetYVelocity() const;
     void SetSpeed(float xSpeed, float ySpeed);
     void SetXSpeed(float xSpeed);
     void SetYSpeed(float ySpeed);
+    void SetVelocity(float velocityX, float velocityY);
+    void SetXVelocity(float velocityX);
+    void SetYVelocity(float velocityY);
 
 private:
     struct
     {
         float mXSpeed;
         float mYSpeed;
+        float mXVelocity;
+        float mYVelocity;
     } mData = {
+        0.0f,
+        0.0f,
         0.0f,
         0.0f
     };

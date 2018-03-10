@@ -16,7 +16,6 @@ DEFINE_COMPONENT(AbeMovementComponent);
 
 static const f32 kAbeRunSpeed = 6.25f;
 static const f32 kAbeWalkSpeed = 2.777771f;
-static const f32 kAbeJumpSpeed = 0.0f;
 static const std::map<AbeMovementComponent::AbeAnimation, std::string> kAbeAnimations = { // NOLINT
     { AbeMovementComponent::AbeAnimation::eAbeWalkToStand, std::string{ "AbeWalkToStand" }},
     { AbeMovementComponent::AbeAnimation::eAbeWalkToStandMidGrid, std::string{ "AbeWalkToStandMidGrid" }},
@@ -276,16 +275,36 @@ void AbeMovementComponent::StandingToRunning()
 
 void AbeMovementComponent::PreStandingToJumpingUp(AbeMovementComponent::States)
 {
-    SetYSpeed(-kAbeJumpSpeed);
     SetAnimation(AbeAnimation::eAbeStandToJumpUp);
 }
 
 void AbeMovementComponent::StandingToJumpingUp()
 {
-    // TODO: Hoist?
+    if (FrameIs(8 + 1))
+    {
+        SetYSpeed(-8.199890f); // TODO: value reported by y-velocity in hook.
+    }
     if (mAnimationComponent->Complete())
     {
         SetState(States::eJumpingUpToFallingDown);
+    }
+    // TODO: Hoist
+}
+
+void AbeMovementComponent::PreJumpingUpToFallingDown(AbeMovementComponent::States)
+{
+    SetYVelocity(2.344f); // Random powered
+    SetAnimation(AbeAnimation::eAbeJumpUpFalling);
+}
+
+void AbeMovementComponent::JumpingUpToFallingDown()
+{
+    if (mAnimationComponent->Complete()) // TODO: check for ground, else we are still falling to our doom (lifts, traps, ...)
+    {
+        SetYSpeed(0.0f);
+        SetYVelocity(0.0f);
+        SetState(States::eGroundingToStanding);
+        // TODO: if grounded, should restore y position to avoid rounding errors.
     }
 }
 
@@ -326,20 +345,6 @@ void AbeMovementComponent::StandingTurningAround()
     {
         FlipDirection();
         SetState(States::eStanding);
-    }
-}
-
-void AbeMovementComponent::PreJumpingUpToFallingDown(AbeMovementComponent::States)
-{
-    SetYSpeed(kAbeJumpSpeed);
-    SetAnimation(AbeAnimation::eAbeJumpUpFalling);
-}
-
-void AbeMovementComponent::JumpingUpToFallingDown()
-{
-    if (mAnimationComponent->Complete())
-    {
-        SetState(States::eGroundingToStanding);
     }
 }
 
@@ -780,14 +785,24 @@ void AbeMovementComponent::SetFrame(u32 frame)
     mAnimationComponent->SetFrame(frame);
 }
 
-void AbeMovementComponent::SetXSpeed(f32 speed)
+void AbeMovementComponent::SetXSpeed(f32 speedX)
 {
-    mPhysicsComponent->SetXSpeed(mData.mDirection * speed);
+    mPhysicsComponent->SetXSpeed(mData.mDirection * speedX);
 }
 
-void AbeMovementComponent::SetYSpeed(f32 speed)
+void AbeMovementComponent::SetYSpeed(f32 speedY)
 {
-    mPhysicsComponent->SetYSpeed(speed);
+    mPhysicsComponent->SetYSpeed(speedY);
+}
+
+void AbeMovementComponent::SetXVelocity(f32 velocityX)
+{
+    mPhysicsComponent->SetXVelocity(velocityX);
+}
+
+void AbeMovementComponent::SetYVelocity(f32 velocityY)
+{
+    mPhysicsComponent->SetYVelocity(velocityY);
 }
 
 void AbeMovementComponent::SnapXToGrid()
